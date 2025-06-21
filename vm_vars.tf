@@ -46,7 +46,7 @@ variable "ipv4_gateway" {
 
 variable "dns_servers" {
     description = "DNS server for nodes"
-    type = string
+    type = list(string)
 }
 
 variable "control_nodes" {
