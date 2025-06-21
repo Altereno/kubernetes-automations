@@ -15,6 +15,11 @@ terraform {
 provider "proxmox" {
     endpoint  = var.endpoint
     api_token = var.api_token
+    ssh {
+        agent = true
+        username = var.username
+        password = var.password
+    }
 }
 
 provider "talos" {

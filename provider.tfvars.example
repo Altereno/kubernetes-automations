@@ -1,5 +1,7 @@
 endpoint = "https://proxmox:8006/"
 api_token = "user@pam!token=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+username = "user"
+password = "abcd123"
 
 node_name = "pve"
 image_datastore_id = "local-zfs"

@@ -9,6 +9,17 @@ variable "api_token" {
     sensitive = true
 }
 
+variable "username" {
+    description = "PVE User"
+    type = string
+}
+
+variable "password" {
+    description = "PVE User password"
+    type = string
+    sensitive = true
+}
+
 variable "node_name" {
     description = "Proxmox node name"
     type = string
