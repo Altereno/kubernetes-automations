@@ -52,7 +52,7 @@ resource "proxmox_virtual_environment_vm" "worker-nodes" {
         }
         ip_config {
             ipv4 {
-                address = cidrhost(var.worker_nodes_ipv4_prefix, count.index)
+                address = "${cidrhost(var.worker_nodes_ipv4_prefix, count.index)}/32"
                 gateway = var.ipv4_gateway
             }
         }
@@ -105,7 +105,7 @@ resource "proxmox_virtual_environment_vm" "control-nodes" {
         }
         ip_config {
             ipv4 {
-                address = cidrhost(var.control_nodes_ipv4_prefix, count.index)
+                address = "${cidrhost(var.control_nodes_ipv4_prefix, count.index)}/32"
                 gateway = var.ipv4_gateway
             }
         }
