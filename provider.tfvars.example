@@ -10,16 +10,16 @@ talos_image_url = "https://factory.talos.dev/image/ce4c980550dd2ab1b17bbf2b08801
 
 network_bridge_device = "vmbr0"
 ipv4_gateway = "192.168.0.1"
-dns_servers = "1.1.1.1"
+dns_servers = ["1.1.1.1"]
 
 control_nodes = 1
 control_nodes_cores = 2
 control_nodes_ram_size = 2048
 control_nodes_disk_size = 10
-control_nodes_ipv4_prefix = "192.168.0.60"
+control_nodes_ipv4_prefix = "192.168.0.64/26"
 
 worker_nodes = 1
 worker_nodes_cores = 1
 worker_nodes_ram_size = 1024
 worker_nodes_disk_size = 10
-worker_nodes_ipv4_prefix = "192.168.0.80"
+worker_nodes_ipv4_prefix = "192.168.0.128/26"
