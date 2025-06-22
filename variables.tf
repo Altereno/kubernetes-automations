@@ -117,3 +117,8 @@ variable "worker_nodes_ipv4_prefix" {
     description = "IPv4 prefix for worker nodes"
     type = string
 }
+
+variable "cluster_name" {
+    description = "Cluster name"
+    type = string
+}
