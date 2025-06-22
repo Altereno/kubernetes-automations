@@ -5,6 +5,7 @@ resource "proxmox_virtual_environment_download_file" "talos_linux_image" {
     file_name = "talos-${var.talos_version}-nocloud-amd64.iso"
     url = var.talos_image_url
     decompression_algorithm = "gz"
+    overwrite = false
 }
 
 resource "proxmox_virtual_environment_vm" "worker-nodes" {
