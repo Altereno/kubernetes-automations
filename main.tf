@@ -21,7 +21,3 @@ provider "proxmox" {
         password = var.password
     }
 }
-
-provider "talos" {
-
-}
