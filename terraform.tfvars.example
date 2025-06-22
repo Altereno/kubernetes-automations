@@ -25,3 +25,5 @@ worker_nodes_cores = 1
 worker_nodes_ram_size = 1024
 worker_nodes_disk_size = 10
 worker_nodes_ipv4_prefix = "192.168.0.128/26"
+
+cluster_name = "test-cluster"
