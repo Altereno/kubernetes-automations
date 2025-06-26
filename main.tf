@@ -39,3 +39,23 @@ provider "helm" {
     config_path = "${path.root}/../.kube/config"
   }
 }
+
+module "proxmox" {
+  source = "./modules/proxmox"
+}
+
+module "talos" {
+  source = "./modules/talos"
+
+  worker_nodes               = module.proxmox.worker_nodes
+  control_nodes              = module.proxmox.control_nodes
+  worker_node_ips = module.proxmox.worker_node_ips
+  control_node_ips = module.proxmox.control_node_ips
+}
+module "cilium" {
+  source = "./modules/cilium"
+}
+
+module "longhorn" {
+  source = "./modules/longhorn"
+}

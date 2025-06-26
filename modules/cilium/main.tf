@@ -59,12 +59,3 @@ resource "helm_release" "cilium" {
     }
   ]
 }
-
-resource "helm_release" "cilium" {
-  name             = "longhorn-csi"
-  repository       = "https://charts.longhorn.io"
-  chart            = "longhorn"
-  version          = "1.8.2"
-  create_namespace = true
-  namespace        = "longhorn-system"
-}
