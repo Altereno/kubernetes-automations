@@ -1,6 +1,16 @@
+terraform {
+  required_providers {
+    talos = {
+      source = "siderolabs/talos"
+    }
+  }
+}
+
+
 locals {
   worker_node_ips  = [for i in range(var.worker_nodes) : "${cidrhost(var.worker_nodes_ipv4_prefix, i)}"]
   control_node_ips = [for i in range(var.control_nodes) : "${cidrhost(var.control_nodes_ipv4_prefix, i)}"]
+  vip_ip           = cidrhost(var.worker_nodes_ipv4_prefix, var.control_nodes)
 }
 
 resource "talos_machine_secrets" "this" {}
@@ -26,99 +36,21 @@ data "talos_client_configuration" "this" {
 }
 
 resource "talos_machine_configuration_apply" "worker" {
-  depends_on = [proxmox_virtual_environment_vm.worker-nodes]
-
   for_each = toset(local.worker_node_ips)
 
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
   node                        = each.value
-  config_patches = [
-    yamlencode({
-      machine = {
-        kubelet = {
-          extraMounts = [
-            {
-              destination = "/var/lib/longhorn"
-              type        = "bind"
-              source      = "/var/lib/longhorn"
-              options = [
-                "bind",
-                "rshared",
-                "rq"
-              ]
-            }
-          ]
-        }
-        install = {
-          disk = "/dev/vda"
-        }
-      }
-      cluster = {
-        network = {
-          cni = {
-            name = "none"
-          }
-        }
-        proxy = {
-          disabled = true
-        }
-      }
-    })
-  ]
+  config_patches              = [file("${path.module}/configs/worker.yaml")]
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
-  depends_on = [proxmox_virtual_environment_vm.control-nodes]
-
   for_each = toset(local.control_node_ips)
 
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
   node                        = each.value
-  config_patches = [
-    yamlencode({
-      machine = {
-        kubelet = {
-          extraMounts = [
-            {
-              destination = "/var/lib/longhorn"
-              type        = "bind"
-              source      = "/var/lib/longhorn"
-              options = [
-                "bind",
-                "rshared",
-                "rq"
-              ]
-            }
-          ]
-        }
-        install = {
-          disk = "/dev/vda"
-        }
-        network = {
-          interfaces = [
-            {
-              interface = "eth0"
-              vip = {
-                ip = "${cidrhost(var.worker_nodes_ipv4_prefix, var.control_nodes)}"
-              }
-            }
-          ]
-        }
-      }
-      cluster = {
-        network = {
-          cni = {
-            name = "none"
-          }
-        }
-        proxy = {
-          disabled = true
-        }
-      }
-    })
-  ]
+  config_patches              = [templatefile("${path.module}/configs/control.tpl", { vip_ip = local.vip_ip })]
 }
 
 resource "talos_machine_bootstrap" "this" {
@@ -131,4 +63,16 @@ resource "talos_cluster_kubeconfig" "this" {
   depends_on           = [talos_machine_bootstrap.this]
   node                 = cidrhost(var.control_nodes_ipv4_prefix, 0)
   client_configuration = talos_machine_secrets.this.client_configuration
+}
+
+resource "local_sensitive_file" "kubeconfig" {
+  depends_on = [talos_cluster_kubeconfig.this]
+  content  = resource.talos_cluster_kubeconfig.this.kubeconfig_raw
+  filename = "${path.root}/exported_configs/kubeconfig"
+}
+
+resource "local_sensitive_file" "talosconfig" {
+  depends_on = [data.talos_client_configuration.this]
+  content  = data.talos_client_configuration.this.talos_config
+  filename = "${path.root}/exported_configs/talosconfig"
 }

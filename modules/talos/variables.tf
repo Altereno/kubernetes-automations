@@ -4,21 +4,23 @@ variable "cluster_name" {
 }
 
 variable "worker_nodes" {
-  description = "Imported from proxmox module"
+  description = "Nummber of worker nodes to create"
   type        = number
+  default     = 0
 }
 
 variable "worker_nodes_ipv4_prefix" {
-  description = "Imported from proxmox module"
+  description = "IPv4 prefix for worker nodes"
   type        = string
 }
 
 variable "control_nodes" {
-  description = "Imported from proxmox module"
+  description = "Nummber of control nodes to create"
   type        = number
+  default     = 0
 }
 
 variable "control_nodes_ipv4_prefix" {
-  description = "Imported from proxmox module"
+  description = "IPv4 prefix for control nodes"
   type        = string
 }

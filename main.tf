@@ -8,16 +8,17 @@ terraform {
       source  = "siderolabs/talos"
       version = ">= 0.8.1"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.37.1"
-    }
     helm = {
       source  = "hashicorp/helm"
       version = ">= 3.0.2"
     }
   }
   required_version = ">= 1.12.2"
+}
+
+locals {
+  kubeconfig_path  = "${path.root}/exported_configs/kubeconfig"
+  talosconfig_path = "${path.root}/exported_configs/talosconfig"
 }
 
 provider "proxmox" {
@@ -30,32 +31,59 @@ provider "proxmox" {
   }
 }
 
-provider "kubernetes" {
-  config_path = "${path.root}/../.kube/config"
-}
-
 provider "helm" {
   kubernetes = {
-    config_path = "${path.root}/../.kube/config"
+    config_path = local.kubeconfig_path
   }
 }
 
 module "proxmox" {
   source = "./modules/proxmox"
+
+  node_name          = var.node_name
+  image_datastore_id = var.image_datastore_id
+  vm_datastore_id    = var.vm_datastore_id
+
+  talos_version   = var.talos_version
+  talos_image_url = var.talos_image_url
+
+  network_bridge_device = var.network_bridge_device
+  ipv4_gateway          = var.ipv4_gateway
+  dns_servers           = var.dns_servers
+
+  control_nodes             = var.control_nodes
+  control_nodes_cores       = var.control_nodes_cores
+  control_nodes_ram_size    = var.control_nodes_ram_size
+  control_nodes_disk_size   = var.control_nodes_disk_size
+  control_nodes_ipv4_prefix = var.control_nodes_ipv4_prefix
+
+  worker_nodes             = var.worker_nodes
+  worker_nodes_cores       = var.worker_nodes_cores
+  worker_nodes_ram_size    = var.worker_nodes_ram_size
+  worker_nodes_disk_size   = var.worker_nodes_disk_size
+  worker_nodes_ipv4_prefix = var.worker_nodes_ipv4_prefix
 }
 
 module "talos" {
+  depends_on = [module.proxmox]
+
   source = "./modules/talos"
 
-  worker_nodes               = module.proxmox.worker_nodes
-  control_nodes              = module.proxmox.control_nodes
-  worker_node_ips = module.proxmox.worker_node_ips
-  control_node_ips = module.proxmox.control_node_ips
+  cluster_name              = var.cluster_name
+  control_nodes             = var.control_nodes
+  control_nodes_ipv4_prefix = var.control_nodes_ipv4_prefix
+  worker_nodes              = var.worker_nodes
+  worker_nodes_ipv4_prefix  = var.worker_nodes_ipv4_prefix
 }
+
 module "cilium" {
+  depends_on = [module.talos]
+
   source = "./modules/cilium"
 }
 
 module "longhorn" {
+  depends_on = [module.talos]
+
   source = "./modules/longhorn"
 }

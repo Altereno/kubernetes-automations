@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    helm = {
+      source = "hashicorp/helm"
+    }
+  }
+}
+
 resource "helm_release" "cilium" {
   name       = "cilium-cni"
   repository = "https://helm.cilium.io/"

@@ -39,5 +39,4 @@ override.tf.json
 terraform.rc
 
 # Config Files
-talosconfig
-.kube/config
+exported_configs/*
