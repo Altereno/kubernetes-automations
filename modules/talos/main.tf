@@ -3,6 +3,9 @@ terraform {
     talos = {
       source = "siderolabs/talos"
     }
+    null = {
+      source = "hashicorp/null"
+    }
   }
 }
 
@@ -75,4 +78,19 @@ resource "local_sensitive_file" "talosconfig" {
   depends_on = [data.talos_client_configuration.this]
   content  = data.talos_client_configuration.this.talos_config
   filename = "${path.root}/exported_configs/talosconfig"
+}
+
+resource "null_resource" "wait_for_kubernetes" {
+  depends_on = [local_sensitive_file.kubeconfig]
+  
+  provisioner "local-exec" {
+    working_dir = "${path.root}/exported_configs"
+    command = <<EOT
+      for i in {1..60}; do
+        kubectl --kubeconfig="kubeconfig" get nodes && break
+        echo "Waiting for Kubernetes API..."
+        sleep 5
+      done
+    EOT
+  }
 }
