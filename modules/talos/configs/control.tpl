@@ -21,3 +21,12 @@ cluster:
       name: none
   proxy:
     disabled: true
+  inlineManifests:
+    - name: namespace-longhorn-system
+      contents: |-
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: longhorn-system
+          labels:
+            pod-security.kubernetes.io/enforce: privileged
