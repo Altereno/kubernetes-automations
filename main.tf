@@ -9,7 +9,7 @@ terraform {
       version = ">= 0.8.1"
     }
     null = {
-      source = "hashicorp/null"
+      source  = "hashicorp/null"
       version = ">= 3.2.4"
     }
     helm = {
@@ -87,7 +87,7 @@ module "cilium" {
 }
 
 module "longhorn" {
-  depends_on = [module.talos]
+  depends_on = [module.cilium]
 
   source = "./modules/longhorn"
 }
