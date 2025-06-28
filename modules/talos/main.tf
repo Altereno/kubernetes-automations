@@ -9,7 +9,6 @@ terraform {
   }
 }
 
-
 locals {
   worker_node_ips  = [for i in range(var.worker_nodes) : "${cidrhost(var.worker_nodes_ipv4_prefix, i)}"]
   control_node_ips = [for i in range(var.control_nodes) : "${cidrhost(var.control_nodes_ipv4_prefix, i)}"]
