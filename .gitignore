@@ -39,4 +39,4 @@ override.tf.json
 terraform.rc
 
 # Config Files
-exported_configs/*
+terraform/exported_configs/*
