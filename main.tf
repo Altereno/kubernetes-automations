@@ -8,22 +8,22 @@ terraform {
       source  = "siderolabs/talos"
       version = ">= 0.8.1"
     }
-    null = {
-      source  = "hashicorp/null"
-      version = ">= 3.2.4"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 3.0.2"
-    }
+    # null = {
+    #   source  = "hashicorp/null"
+    #   version = ">= 3.2.4"
+    # }
+    # helm = {
+    #   source  = "hashicorp/helm"
+    #   version = ">= 3.0.2"
+    # }
   }
   required_version = ">= 1.12.2"
 }
 
-locals {
-  kubeconfig_path  = "${path.root}/exported_configs/kubeconfig"
-  talosconfig_path = "${path.root}/exported_configs/talosconfig"
-}
+# locals {
+#   kubeconfig_path  = "${path.root}/exported_configs/kubeconfig"
+#   talosconfig_path = "${path.root}/exported_configs/talosconfig"
+# }
 
 provider "proxmox" {
   endpoint  = var.endpoint
@@ -35,11 +35,11 @@ provider "proxmox" {
   }
 }
 
-provider "helm" {
-  kubernetes = {
-    config_path = local.kubeconfig_path
-  }
-}
+# provider "helm" {
+#   kubernetes = {
+#     config_path = local.kubeconfig_path
+#   }
+# }
 
 module "proxmox" {
   source = "./modules/proxmox"
@@ -80,14 +80,14 @@ module "talos" {
   worker_nodes_ipv4_prefix  = var.worker_nodes_ipv4_prefix
 }
 
-module "cilium" {
-  depends_on = [module.talos]
+# module "cilium" {
+#   depends_on = [module.talos]
 
-  source = "./modules/cilium"
-}
+#   source = "./modules/cilium"
+# }
 
-module "longhorn" {
-  depends_on = [module.cilium]
+# module "longhorn" {
+#   depends_on = [module.cilium]
 
-  source = "./modules/longhorn"
-}
+#   source = "./modules/longhorn"
+# }
