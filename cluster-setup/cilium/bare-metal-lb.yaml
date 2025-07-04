@@ -1,0 +1,21 @@
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: default-policy
+spec:
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  interfaces:
+  - ^eth[0-9]+
+  externalIPs: true
+  loadBalancerIPs: true
+---
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "pool"
+spec:
+  blocks:
+  - cidr: "10.0.10.224/28"
