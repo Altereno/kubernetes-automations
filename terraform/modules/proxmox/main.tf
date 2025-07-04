@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    proxmox = {
+      source = "bpg/proxmox"
+    }
+  }
+}
+
 resource "proxmox_virtual_environment_download_file" "talos_linux_image" {
   node_name               = var.node_name
   content_type            = "iso"
