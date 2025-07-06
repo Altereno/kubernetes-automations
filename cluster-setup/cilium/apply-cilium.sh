@@ -7,3 +7,7 @@ helm upgrade --install \
     --version 1.17.5 \
     --namespace kube-system \
     --values=chart-values.yaml
+
+kubectl label namespaces kube-system shared-gateway-access=true
+
+kubectl apply -f httproute.yaml

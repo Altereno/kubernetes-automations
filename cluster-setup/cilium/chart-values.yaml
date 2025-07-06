@@ -34,4 +34,8 @@ l2announcements:
 k8sClientRateLimit:
   qps: 20
   burst: 40
-
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
