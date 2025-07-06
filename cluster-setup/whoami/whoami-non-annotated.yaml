@@ -1,7 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whoami-example
+  labels:
+    shared-gateway-access: true
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: whoami-cert
+  namespace: whoami-example
+spec:
+  secretName: whoami-cert
+  dnsNames:
+    - "whoami.cluster.stevenchen.one"
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: whoami
+  namespace: whoami-example
 spec:
   replicas: 2
   selector:
@@ -25,6 +46,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: whoami
+  namespace: whoami-example
 spec:
   ports:
   - port: 80
@@ -38,24 +60,23 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: whoami
-  annotations:
-    cert-manager.io/cluster-issuer: cloudflare-clusterissuer
+  namespace: whoami-example
 spec:
   gatewayClassName: cilium
   listeners:
   - name: http
-    hostname: "*.cluster.stevenchen.one"
     port: 443
     protocol: HTTPS
     tls:
       certificateRefs:
       - kind: Secret
-        name: wildcard-cert
+        name: whoami-cert
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: whoami
+  namespace: whoami-example
 spec:
   parentRefs:
   - name: whoami
