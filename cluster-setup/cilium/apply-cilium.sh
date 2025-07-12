@@ -6,8 +6,9 @@ helm upgrade --install \
     cilium cilium/cilium \
     --version 1.17.5 \
     --namespace kube-system \
-    --values=chart-values.yaml
+    --values=chart-values.yaml \
+    --wait
 
+kubectl apply -f lb.yaml
 kubectl label namespaces kube-system shared-gateway-access=true
-
 kubectl apply -f httproute.yaml
